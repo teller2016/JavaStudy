@@ -128,7 +128,7 @@ int level = 10; //level 변수 선언과 동시에 값을 대입(초기화)
 
 - ```ASCII```는 1byte만 사용
   다른 언어 문자는 2byte 이상을 사용한다
-  ```unicode```: 각 언어의 표준 인코딩을 정의한것
+  ```unicode```: 각 언어의 표준 인코딩을 정의한것 (2byte 이다)
 
 - 자바는 ```unicode```에 기반하여 char형은 2바이트이다
 
@@ -186,3 +186,236 @@ public class CharacterEx1 {
   > 1.0 -> 가수
   > 10 -> 밑수
   > -1 -> 지수
+
+- float형, double형
+
+  >float형: 1부호 1비트, 지수 8비트, 가수 23비트 => 총 32비트 (4바이트) 이용
+  >
+  >double형: 1부호 1비트, 지수 11비트, 가수 52비트 => 총 64비트(8바이트) 이용
+
+- 자바에서는 double형을 기본으로 사용
+
+  ```java
+  package chapter2;
+  
+  public class DoubleEx1 {
+  
+  	public static void main(String[] args) {
+  		double dnum = 3.14;
+  		float fnum = 3.14F; // float의 경우 식별자 F,f를 붙여야 된다
+  		
+  		System.out.println(dnum);
+  		System.out.println(fnum);
+  	}
+  }
+  ```
+
+  - 부동 소수점 방식을 이용하기에 연산을 진행하면 오차가 발생할 수 있다
+
+    ```java
+    double dnum = 1;
+    for(int i=0; i<10000; i++){
+        dnum = dnum + 0.1;
+    }
+    System.out.println(dnum);	//1001.0000000000159 결과가 나온다
+    ```
+
+#### 논리 자료형
+
+- 변수의 참, 거짓을 나타내는 데 사용
+- boolean형
+  - 1바이트
+  - true, false 두 값만 가짐
+
+```java
+package chapter2;
+
+public class BooleanEx {
+
+	public static void main(String[] args) {
+		boolean isMarried = true;
+		System.out.println(isMarried); 	//true 출력
+	}
+}
+```
+
+#### 자료형 없이 변수 선언 (자바 10)
+
+- 지역 변수 자료형 추론(local variable type inference)
+  - 변수에 대입되는 자료를 보고 컴파일러가 추측함
+
+```java
+var num = 10;		//int
+var dNum = 10.0;	//double
+var str = "hello";	//string으로 컴파일 
+```
+
+- 유의사항
+
+  - 한번 선언한 자료형 변수를 다른 자료형으로 사용 못함
+
+  - ```지역변수```로만 사용가능
+
+    ```java
+    public class TypeInference {
+    	public static void main(String[] args) {
+    		var i = 10;
+    		var j = 10.0;
+    		var str = "hello";
+    		
+    		System.out.println(i);
+    		System.out.println(j);
+    		System.out.println(str);
+    		
+    		str = "test";	//다른 문자열 대입 가능
+    		//str = 3;		//str은 String형으로 사용되었기에 정수값 넣지 못함
+    	}
+    }
+    ```
+
+    
+
+## 2-4 상수와 리터럴
+
+#### 상수 선언
+
+- ```상수(constant)```는 항상 변하지 않는 수
+
+  ```java
+  final double PI = 3.14;
+  final int MAX_NUM = 100;
+  ```
+
+  - 이름은 주로 대문자로 사용 및 _ 기호 사용
+
+```java
+public class Constant {
+	public static void main(String [] arg) {
+		final int MAX_NUM = 100;
+		final int MIN_NUM;
+		
+		MIN_NUM = 0;	//사용하기 전에 초기화는 가능, 초기화 안하면 오류 발생
+		
+		System.out.println(MAX_NUM);
+		System.out.println(MIN_NUM);
+		
+		//MAX_NU = 1000;	// 오류, 상수값은 변경 불가능
+	}
+}
+```
+
+#### 상수 이용 이유
+
+- 반복적으로 사용, 변하지 않는 값을 선언하면 좋음
+- 상수값만 변경하여 프로그램 내부의 값들을 변경할 수 있다
+
+#### 리터럴
+
+- 프로그램에서 사용하는 모든 숫자, 문자, 논리값을 일컫는 말
+
+  ```java
+  char ch = 'A';
+  int num = 10;
+  final double PI =3.14; //모두 리터럴
+  ```
+
+- 리터럴은 프로그램 시작시 시스템에 같이 로딩되어 특정 메모리 공간인 ```상수 풀```에 놓인다
+  int num = 3;을 하면
+  3이 상수 풀에 로딩된 후 변수로 대입된다
+
+- ```float PI = 3.14F;```에서 F를 붙인 것도 3.14 리터럴이 float형으로 상수 풀에 저장되어야 한다는 의미로 사용
+
+
+
+## 2-5 형 변환
+
+#### 형 변환이란
+
+- 주로 연산 과정에서 각 변수의 자료형이 다를때 같게 바꾸는 작업
+
+  - 묵시적 형 변환(자동 형 변환)
+
+    1. 바이트 크기가 작은 자료형에서 큰 자료형으로 형 변환이 이루어진다
+
+    2. 덜 정밀한 자료형에서 더 정밀한 자료형으로 변환이 이루어진다
+
+       > byte -> short, char -> int -> long -> float -> double
+       >
+       > 반대로 형 변환을 위해서는 강제로 변환 필요
+
+  - 명시적 형 변환(강제 형 변환)
+
+#### 묵시적 형 변환
+
+- __바이트 크키가 작은 자료형에서 큰 자료형으로 대입__
+
+  ```java
+  byte bNum = 10;	//1byte
+  int iNum = bNum;//4byte
+  // 자료 손실없이 bNum값이 대입된다, 남은 3byte에는 0이 채워진다
+  ```
+
+- __덜 정밀한 자료형에서 더 정밀한 자료형으로 대입하는 경우__
+
+  ```java
+  int iNum2 = 20;		//4바이트
+  float fNum = iNum2;	//4바이트
+  //둘다 4바이트이지만 float형이 더 정밀하여 float형으로 변환된다
+  ```
+
+- __연산 중에 자동 변환되는 경우__
+
+  ```java
+  int iNum = 20;
+  float fNum = iNum;
+  double dNum;
+  dNum = fNum + iNum; // +연산에서 float형으로 변환 후
+  //dNum에 대입되면서 double형으로 변환
+  ```
+
+#### 명시적 형 변환
+
+- ___바이트 크기가 큰 자료형에서 작은 자료형으로 대입___
+
+  ```java
+  int iNum = 10;
+  byte bNum = (byte)iNum; //괄호를 사용하여 형을 명시함, (byte)안 붙이면 오류 발생
+  ```
+
+  ```java
+  int iNum = 1000;
+  byte bNum = (byte)iNum;	//자료 손실 발생
+  // 1000이 byte형 범위(-128~127)을 넘겨 자료에 대한 손실 발생
+  ```
+
+- ___더 정밀한 자료형에서 덜 정밀한 자료형으로 대입___
+
+  ```java
+  double dNum = 3.14;
+  int iNum2 = (int)dNum;
+  ```
+
+- ___연산 중 병 변환___
+
+  ```java
+  public class ExplicitConversion {
+  
+  	public static void main(String[] args) {
+  		double dNum1 = 1.2;
+  		float fNum2 = 0.9F;
+  		
+  		int iNum3 = (int)dNum1 + (int)fNum2;	//각각 변환 후 연산
+  		int iNum4 = (int)(dNum1 + fNum2);		//연산 후 변환
+  		System.out.println(iNum3);	//1 출력
+  		System.out.println(iNum4);	//2 출력
+  	}
+  }
+  ```
+
+
+
+## 연습문제
+
+1. 바이트 크기가 작은 자료형을 더 큰 자료형으로 대입하는 형 변환은 자동으로 이루어집니다.  => 예
+2. 실수를 정수형 변수에 대입하는 경우에 형 변환이 자동으로 이루어지고, 소수점 이하 부분만 없어집니다. => 아니오
+3. 더많은 실수를 표현하기 위해 가수부와 지수부로 비트를 나누어 표현하는 방식을 ```부동 소수점 방식```이라고 합니다.
