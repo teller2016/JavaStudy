@@ -11,9 +11,9 @@ public class ExplicitConversion {
 		System.out.println(iNum3);	//1 출력
 		System.out.println(iNum4);	//2 출력
 		
-		double a = 3.14;
-		int i = a;
-		System.out.println(i);
+		//double a = 3.14;
+		//int i = a;
+		//System.out.println(i);
 	}
 
 }
