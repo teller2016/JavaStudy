@@ -187,6 +187,8 @@ public class DoWhileExample {
 
 ### for문
 
+- 반복 횟수가 정해진 경우에 사용하기 좋다
+
 - 변수 초기화식, 조건식, 증감식을 사용하여 반복문을 구성한다
 
   - ```초기화식```: for문 시작시 딱 한 번만 수행 ( 사용할 변수를 초기화 )
@@ -221,4 +223,142 @@ public class ForExample1 {
   - ```모두```: ```for( ; ; ) {}```
 
 ### 중첩된 반복문
+
+```java
+public class NestedLoop {
+
+	public static void main(String[] args) {
+		int dan;
+		int times;
+		for(dan=2; dan<=9; dan++) {
+			for(times=1; times<=9; times++) {
+				System.out.println(dan+"X"+times+"="+ dan*times);
+			}
+			System.out.println( );
+		}
+	}
+}
+```
+
+### continue문
+
+- 반복문과 함께 쓰이며, 반복문 안에서 ```continue```문을 만나면 반복문의 처음으로 돌아간다
+
+```java
+public class ContinueExample {
+
+	public static void main(String[] args) {
+		int total = 0;
+		int num;
+		
+		for(num=1; num<=100; num++) {
+			if(num%2==0)
+				continue;	//짝수일 경우 이후 수행을 생략하고 num++을 수행
+			total += num;
+		}
+		System.out.println("1부터 100까지 홀수의 합:"+total);
+	}
+}
+```
+
+### break문
+
+- ```break```문을 반복문안에서 만날경우 반복문을 빠져나온다
+- 중첩 반복문일 경우 ```break```문을 감싸고 있는 반복문만 빠져나온다
+
+```java
+public class BreakExample2 {
+
+	public static void main(String[] args) {
+		int sum = 0;
+		int num = 0;
+		
+		for(num=0; ; num++) {
+			sum += num;
+			if(sum>=100)		//sum이 100보다 같거나 클때 for반복문 중단
+				break;
+		}
+		System.out.println("num: "+num);
+		System.out.println("sum: "+sum);
+	}
+}
+```
+
+
+
+## 연습문제
+
+### Q4
+
+```
+   *   
+  ***
+ *****
+*******
+를 출력하라
+```
+
+```java
+public class Q4 {
+
+	public static void main(String[] args) {
+		for(int i=1;i<=4;i++) {
+			var line = "";
+			int blank = (7-(2*i-1))/2;
+			for(int a=0;a<blank;a++)
+				line += " ";
+			for(int b=0;b<2*i-1;b++)
+				line += "*";
+			for(int a=0;a<blank;a++)
+				line += " ";
+			System.out.println(line);
+		}
+	}
+}
+```
+
+### Q5
+
+```
+   *   
+  ***
+ *****
+*******
+ *****
+  ***
+   *
+를 출력하라
+```
+
+```java
+public class Q5 {
+
+	public static void main(String[] args) {
+		int lines = 7;
+		int star = 1;
+		
+		for(int i=1; i<=lines; i++) {
+			var line = "";
+			int blank = (lines-star)/2;
+			
+			for(int a=0;a<blank;a++)
+				line += " ";
+			for(int b=0;b<star;b++)
+				line += "*";
+			for(int a=0;a<blank;a++)
+				line += " ";
+			
+			if(i<=lines/2) {
+				star += 2;
+			}
+			else {
+				star -= 2;
+			}
+			System.out.println(line);
+		}
+	}
+}
+```
+
+
 
