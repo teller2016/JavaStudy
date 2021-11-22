@@ -290,3 +290,482 @@ public class FunctionTest {
   - **패키지** 이름은 모두 **소문자**로 만든다
   - **변수**와 **메서드** 이름은 **소문자**로 시작 + **낙타 표기법** 사용
     - ```낙타 표기법```: 소문자로 시작해 새 단어마다 대문자를 써주는 방식
+
+## 5-4 클래스와 인스턴스
+
+### 클래스 사용과 main()함수
+
+- ```main() 함수```: 자바 가상 머신(JVM)이 프로그램을 시작하기 위해 호출하는 함수이다
+
+  - 클래스 내부에서 만들지만, 클래스의 메서드는 아니다
+
+- main() 함수에서 클래스를 사용하는 방법
+
+  1. 클래스 내부에 main() 함수를 만드는 방법
+
+     - **Student 클래스에 main() 함수 포함하기**
+
+       ```java
+       public class Student {	//클래스 이름
+       	int studentID;		//멤버 변수들
+       	String studentName;
+       	int grade;
+       	String address;
+       	
+       	public String getStudentName() {
+       		return studentName;
+       	}
+       	
+       	public static void main(String[] arg) {
+       		Student studentAhn = new Student();	//Student 클래스 생성
+       		studentAhn.studentName = "안연수";
+       		
+       		System.out.println(studentAhn.studentName);
+       		System.out.println(studentAhn.getStudentName());
+       	}
+       }
+       ```
+
+       - 클래스 내부에 main() 함수를 만들면 이 클래스가 프로그램의 **시작 클래스**가 된다
+
+  2. 외부에 테스트용 클래스를 만들어 사용하는 방법
+
+     - **main() 함수를 포함한 실행 클래스 따로 만들기**
+
+       ```java
+       package classpart;
+       
+       public class StudentTest {	//실행 클래스를 따로 만들었다
+       
+       	public static void main(String[] args) {
+       		Student studentAhn = new Student();	//Student 클래스 생성
+       		studentAhn.studentName = "안연수";
+       		
+       		System.out.println(studentAhn.studentName);
+       		System.out.println(studentAhn.getStudentName());
+       	}
+       
+       }
+       ```
+
+       - 둘다 ```classpart```라는 동일 패키지에 있어서 문제 없으나, **패키지가 다를 경우** ```import```문을 사용하여 원하는 **클래스를 불러와야 한다**
+
+### new 예약어로 클래스 생성하기
+
+- 클래스 생성 방법
+
+  - ```(클래스형) (변수) = new (생성자);```
+
+  - 클래스가 생성된다는 것은 클래스를 실제 사용할 수 있도록 **메모리 공간(힙 메모리)**을 할당 받는것이다
+
+  - ```인스턴스```: 실제 사용할 수 있도록 생성된 클래스
+
+  - ```참조 변수```: 인스턴스를 가리키는 클래스형 변수
+
+    ```java
+    Student studentAhn = new Student();
+    ```
+
+    - new Student();로 Student 클래스를 생성하여 studentAhn에 대입
+    - studentAhn은 ```참조 변수```이며, 이 변수가 생성된 ```인스턴스```를 가리킨다
+
+### 인스턴스와 참조 변수
+
+> ```객체```: '의사나 행위가 미치는 대상'
+> ```클래스```: 객체를 코드로 구현한 것
+> ```인스턴스```: 클래스가 메모리 공간에 생성된 상태
+> **```객체```**: 생성된 클래스의 인스턴스
+>
+> ​																 ==(생성)==> Student1 (인스턴스)
+> 학생 ===(정의)===> Student (클래스) ==(생성)==> Student2 (인스턴스)
+> ​																 ==(생성)==> Student3 (인스턴스)
+
+- 클래스의 생성자```Student()```를 호출하면 인스턴스가 만들어진다
+
+- 클래스로부터 여러 개의 인스턴스를 생성할 수 있다
+
+  ```java
+  public class StudentTest1 {
+  	public static void main(String[] args) {
+  		Student student1 = new Student();	//첫번째 학생 생성
+  		student1.studentName = "안연수";
+  		System.out.println(student1.studentName);
+  		
+  		Student student2 = new Student();	//두번째 학생 생성
+  		student2.studentName = "안승연";
+  		System.out.println(student2.studentName);
+  	}
+  
+  }
+  ```
+
+  - 생성자를 2번 이용하여 서로 다른 변수 이름으로 클래스 2개 생성하였다. 즉 서로 다른 인스턴스 2개가 생성됨
+
+- ```참조 변수```를  사용하면 인스턴스의 **멤버 변수**와 **메서드**를 참조하여 사용할 수 있다
+
+  - ```도트(.) 연산자```를 사용한다
+
+    > ```(참조 변수).(멤버 변수)```
+    >
+    > ```(참조 변수).(메서드)```
+    >
+    > EX.```studentAhn.studentName = "Jung";```
+    > EX.```System.out.println(studentAhn.getStudentName());```
+
+### 인스턴스와 힙 메모리
+
+- new Student()를 통해 인스턴스를 생성하면 studentID, studentName 등의 멤버 변수를 저장할 공간이 필요하다
+
+  - 클래스 생성자를 하나 호출하면 인스턴스가 ```힙 메모리```에 생성된다
+
+    > Student studentAhn = new Student();
+    > 생성된 클래스를 studentAhn 변수에 대입하면, 인스턴스가 저장된 메모리를 studentAhn 변수가 가리킨다.
+    >
+    > (스택메모리)		(힙 메모리)
+    > studentAhn ----->  Student 클래스 생성
+    >
+    > - studentAhn은 **지역 변수**이며 지역 변수는 **스택 메모리**에 생성된다
+    > - 인스턴스는 **힙 메모리**에 생성된다
+    > - studentAhn에 생성된 인스턴스를 대입하는 것은 studentAhn에 인스턴스가 생성된 힙 메모리 **주소**를 대입하는 것과 동일
+
+> **힙 메모리란?**
+>
+> ```힙```: 프로그램에서 사용하는 ```동적 메모리(dynamic memory)``` 공간
+>
+> - 프로그램은 **스택, 힙, 데이터** 세 영역을 사용
+> - 객체가 생성될 때 힙 메모리를 사용
+> - 힙은 동적으로 할당되며 사용이 끝나면 메모리를 해제해 주어야 한다.
+>   C, C++은 직접 해제, but 자바는 **가비지 컬렉터**가 자동으로 메모리 해제해 준다
+
+- **참조 변수**는 힙 메모리에 생성된 인스턴스를 가리킨다
+
+  ```java
+  public class StudentTest2 {
+  
+  	public static void main(String[] args) {
+  		Student student1 = new Student();
+  		student1.studentName = "안연수";
+  		
+  		Student student2 = new Student();
+  		student2.studentName = "안승연";
+  		
+  		System.out.println(student1);
+  		System.out.println(student2);
+  	}
+  }
+  /*출력
+  	classpart.Student@54bedef2
+  	classpart.Student@5caf905d
+  */
+  ```
+
+  - 힙 메모리에 생성된 인스턴스의 메모리 주소는 **참조 변수**에 저장된다
+  - ```(클래스 이름)@(주소 값)```으로 출력된다
+
+### 객체 지향 용어 정리
+
+| **용어**  | **설명**                                    |
+| :-------: | :------------------------------------------ |
+|   객체    | 객체 지향 프로그램의 대상, 생성된 인스턴스  |
+|  클래스   | 객체를 프로그래밍하기 위해 코드로 만든 형태 |
+| 인스턴스  | 클래스가 메모리에 생성된 상태               |
+| 멤버 변수 | 클래스의 속성, 특성                         |
+|  메서드   | 멤버 변수를 이용하여 클래스의 기능을 구현   |
+| 참조 변수 | 메모리에 생성된 인스턴스를 가리키는 변수    |
+|  참조 값  | 생성된 인스턴스의 메모리 주소 값            |
+
+## 5-5 생성자
+
+### 생성자란?
+
+```java
+package constructor;
+
+public class Person {
+	String name;
+	float height;
+	float weight;
+}
+```
+
+```java
+public class PersonTest {
+
+	public static void main(String[] args) {
+		Person personLee = new Person();
+	}
+}
+```
+
+- ```생성자```: 클래스를 생성할 때 사용하는 함수(ex. ```Person()```)
+  - 생성자는 클래스를 처음 만들 때 멤버 변수나 상수를 **초기화**한다
+  - 생성자 이름은 클래스 이름과 같고, 반환값이 없다
+
+- **```디폴트 생성자```**: 자동으로 만들어주는 생성자
+
+  - Person 클래스를 살펴보면 Person() 생성자가 따로 없다
+
+  - 생성자가 없는 클래스는 클래스 파일을 컴파일할 때 자바 컴파일러에서 **자동으로 생성자를 만들어 준다**
+
+    ```java
+    public class Person {
+    	String name;
+    	float height;
+    	float weight;
+        
+        public Person() {}	// 자바 컴파일러가 자동으로 제공하는 디폴트 생성자
+    }
+    ```
+
+### 생성자 만들기
+
+- 생성자는 주로 멤버 변수에 대한 값들을 매개변수로 받아서 인스턴스가 새로 생성될때 멤버 변수 값들을 초기화하는 역할을 한다
+
+```java
+public class Person {
+	String name;
+	float height;
+	float weight;
+	
+    public Person() {}	//필요의 경우 디폴트 생성자 직접 추가
+    
+	public Person(String pname) {	//이름을 입력받아 Person 클래스를 생성하는 생성자
+		name = name;
+	}
+}
+```
+
+- 생성자를 직접 구현하면 **디폴트 생성자**는 없기 때문에 직접 추가해줄 수 있다
+
+### 생성자 오버로드
+
+- ```오버로드```: 객체 지향 프로그램에서 메소드 이름이 같고 매개변수만 다른 경우
+
+- ```생성자 오버로드```: 클래스에서 생성자가 두 개 이상 제공되는 경우
+
+  > 경우에 따라 디폴트 생성자를 제공하지 않기도 한다
+  >
+  > EX. 학생이 생성될 때 반드시 학번이 있어야 하는 경우
+  >
+  > ```java
+  > public class Student {
+  > 	int studentID;
+  > 
+  > 	public Student(int studentID) {	
+  > 		this.studentID = studentID;
+  > 	}
+  > }
+  > ```
+
+```java
+//생성자 사용하기
+public class Person {
+	String name;
+	float height;
+	float weight;
+	
+	public Person() {}	//디폴트 생성자
+	
+	public Person(String pname) {	//이름만 받는 생성자
+		name = pname;
+	}
+	
+	public Person(String pname, float pheight, float pweight) {
+		name = pname;
+		height = pheight;
+		weight = pweight;
+	}
+}
+```
+
+```java
+public class PersonTest {
+
+	public static void main(String[] args) {
+		Person personKim = new Person();
+		personKim.name = "김땡땡";	//디폴트 생성자로 클래스 생성 후
+		personKim.weight = 85.5F;	//인스턴스 변수 값을 따로 초기화
+		personKim.height = 180.0F;
+		
+		Person personLee = new Person("이몰리", 175, 75);	//인스턴스 변수 초기화 동시에 클래스 생성
+	}
+}
+```
+
+## 5-6 참조 자료형
+
+### 참조 자료형이란?
+
+- ```기본 자료형 변수```: 크기가 정해진 (int, char, float, double 등)기본 자료형으로 선언하는 변수
+- ```참조 자료형 변수```: 클래스 자료형으로 선언하는 변수
+  1. 프로그래머가 필요에 의해 만든 클래스를 사용할 수 있다
+  2. JDK에서 제공하는 클래스를 사용할 수 있다
+
+```java
+package reference;
+
+public class Student1 {
+	int studentID;
+	String studentName;//String도 JDK에서 제공하는 참조 자료형이다.
+	int koreaStudent;	//국어 성적
+	int mathScore;		//수학 성적
+    String koreaSubject;//국어 과목 이름
+    String mathSubject;	//수학 과목 이름
+}
+```
+
+- 학생에 대한 클래스인데 과목에 대한 변수가 늘어나고 있다
+
+  - 해결을 위해 과목의 이름과 성적을 Subject라는 클래스로 분리한다
+
+  ```java
+  public class Student1 {
+  	int studentID;
+  	String studentName;
+  	Subject korean;	//직접 만든 참조 자료형
+  	Subject math;
+  }
+  ```
+
+  ```java
+  public class Subject {
+  	String SubjectName;
+  	int scorePoint;
+  }
+  ```
+
+## 5-7 정보 은닉
+
+### 접근 제어자 살펴보기
+
+- 객체 지향 프로그램에서는 ```예약어```(ex. public)를 사용해 클래스 내부의 변수, 메서드, 생성자에 대한 **접근 권한**을 지정할 수 있다
+
+- 이러한 ```예약어```를 ```접근 제어자```라고 한다
+
+  - ```public```은 선언한 변수나 메서드를 외부 클래스에서 접근 가능해, 사용할 수 있다는 뜻
+  - ```private```은 외부 클래스에서 사용할 수 없음
+
+  ```java
+  package hiding;
+  
+  public class Student {
+  	int studentID;
+  	private String studentName;		//학생 이름을 private을 선언
+  	int grade;
+  	String address;
+  	
+  	...
+  }
+  ```
+
+  ```java
+  public class StudentTest {
+  
+  	public static void main(String[] args) {
+  		Student studentLee = new Student();
+  		studentLee.studentName = "이상원";		//오류 발생
+  		
+  		System.out.println(studentLee.studentName());
+  	}
+  
+  }
+  ```
+
+  - studentName을 **private**으로 선언하여 외부 클래스인 **StudentTest.java**클래스에서 변수에 대한 접근 권한이 없다
+
+### get(), set() 메서드
+
+- **private**으로 선언한 변수를 외부 코드에서 사용하려면, 변수를 사용할 수 있는 **public 메서드**를 제공해야 된다.
+
+  - **public 메서드**가 제공되지 않으면 변수에 대한 접근 방법이 없다
+  - ```set()```, ```get()``` public 메서드를 사용한다
+
+  ```java
+  public class Student {
+  	int studentID;
+  	private String studentName;		//학생 이름을 private을 선언
+  	int grade;
+  	String address;
+  	
+  	public String getStudentName() {//private 변수인 studentName에 접근하여 값을 가져오는 public get() 메서드
+  		return studentName;
+  	}
+  	
+  	public void setStudentName(String studentName) {//변수에 접근하여 값을 지정하는 public set() 메서드
+  		this.studentName = studentName;
+  	}
+  }
+  ```
+
+  - _이클립스에서 클래스 내부에서 우클릭 [Source -> Generate Getters and Setters] 메뉴를 통해 자동으로 get, set 메서드 생성 가능_
+
+  ```java
+  public class StudentTest {
+  
+  	public static void main(String[] args) {
+  		Student studentLee = new Student();
+  		//studentLee.studentName = "이상원";		//오류 발생
+  		studentLee.setStudentName("이상원");	//public 메서드를 통해 private 변수에 접근 가능
+          
+  		System.out.println(studentLee.getStudentName());
+  	}
+  
+  }
+  ```
+
+  - **public 메서드**를 통해 **private** 변수에 접근 가능하다
+
+### 정보 은닉이란?
+
+- 변수를 **public**으로 선언하는 것과 **private**으로 선언하여 public 메서드를 제공하는 것의 차이는?
+
+  ```java
+  public class MyDate{
+      public int day;
+      public int month;
+      public int year;
+  }
+  ```
+
+  - day, month, year모두 public의 경우 외부 클래스에서 MyDate를 사용할 때 **값을 마음대로 넣을 수 있다**
+  - 이럴 경우 **오류가 나더라도 값을 대입할 수 있다**
+
+  ```java
+  public class MyDate{
+      private int day;
+      private int month;
+      private int year;
+      
+      public void setDay(int day){
+          if(month==2){
+              if(day<1 || day>28)
+                  System.out.println("오류 발생!!");
+              else
+                  this.day = day;
+          }
+      }
+  }
+  ```
+
+  - **private**을 사용할 경우 **오류가 발생하더라도 해당 변수에 값을 대입되지 못하도록 제어할 수 있다**
+
+- ```정보 은닉```: 클래스 내부에서 사용할 변수나 메서드를 private으로 선언해 외부에서 접근하지 못하도록 하는 것
+
+### 접근 제어자 정리
+
+| 접근 제어자 | 설명                                                         |
+| ----------- | ------------------------------------------------------------ |
+| public      | 외부 클래스 어디에서나 접근 가능                             |
+| protected   | 같은 패키지 내부와 상속 관계의 클래스에서만 접근할 수 있고<br />그 외 클래스에서는 접근할 수 없다 |
+| 없는 경우   | default이며 같은 패키지 내부에서만 접근할 수 있다            |
+| private     | 같은 클래스 내부에서만 접근할  수 있다                       |
+
+## 연습문제
+
+1. 클래스를 생성할 때 호출하는 ```생성자```는 멤버 변수를 초기화하는데 사용합니다
+
+2. 클래스를 생성하여 메모리에 있는 상태를 ```인스턴스```라 하고 멤버 변수를 다른 말로 ```인스턴스 변수```라고 합니다
+
+3. ```메서드```는 일반 함수에 객체 지향의 개념을 추가하여, 클래스 내부에 선언하고 클래스 멤버 변수를 사용하여 클래스 기능을 구현합니다
+
+4. 

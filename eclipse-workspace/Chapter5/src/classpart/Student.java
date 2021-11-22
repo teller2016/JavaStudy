@@ -17,4 +17,12 @@ public class Student {	//클래스 이름
 	public void showStudentInfo() {
 		System.out.println(studentName + ", " + address);
 	}
+	
+	public static void main(String[] arg) {
+		Student studentAhn = new Student();
+		studentAhn.studentName = "안연수";
+		
+		System.out.println(studentAhn.studentName);
+		System.out.println(studentAhn.getStudentName());
+	}
 }
