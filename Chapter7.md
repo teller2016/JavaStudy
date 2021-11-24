@@ -417,16 +417,160 @@ D, 68
 
 - 객체 배열을 좀 더 쉽게 사용할 수 있도록 **객체 배열 클래스** `ArrayList`를 제공한다
 
-### Array List 클래스의 주요 메서드
+### ArrayList 클래스의 주요 메서드
 
 - 가장 많이 사용하는 주요 메서드
 
-  | 메서드           | 설명                                              |
-  | ---------------- | ------------------------------------------------- |
-  | boolean add(E e) | 요소 하나를 배열에 추가. E는 요소의 자료형을 의미 |
-  |                  |                                                   |
-  |                  |                                                   |
-  |                  |                                                   |
-  |                  |                                                   |
+  | 메서드              | 설명                                                     |
+  | ------------------- | -------------------------------------------------------- |
+  | boolean add(E e)    | 요소 하나를 배열에 추가. E는 요소의 자료형을 의미        |
+  | int size()          | 배열에 추가된 요소 전체 개수를 반환                      |
+  | E get(int index)    | 배열의 index 위치에 있는 요소 값을 반환                  |
+  | E remove(int index) | 배열의 index 위치에 있는 요소 값을 제거하고 그 값을 반환 |
+  | boolean isEmpty()   | 배열이 비어 있는지 확인                                  |
 
-  
+  - add() 메서드를 이용하면 **배열 길이와 상관없이** 객체를 추가할 수 있다
+
+### ArrayList 클래스 활용하기
+
+- ArrayList 사용 형식
+
+  > ArrayList<E> (배열 이름) = new ArrayList<E>();
+
+  - `< >`안에 사용할 객체의 자료형(E)를 넣는다
+
+    ```java
+    ArrayList<Book> library = new ArrayList<Book>();
+    ```
+
+  - ArrayList는 java.util 패키지에 구현되어 있는 클래스이다
+
+    - 사용을 위해 `import`를 해주어야 한다
+
+      ```java
+      import java.util.ArrayList;
+      ```
+
+```java
+public class ArrayListTest {
+
+	public static void main(String[] args) {
+		ArrayList<Book> library = new ArrayList<Book>();
+		
+		library.add(new Book("책1","몰리"));
+		library.add(new Book("책2","보리"));
+		
+		for(int i=0;i<library.size();i++) {
+			Book book = library.get(i);
+			book.showBookInfo();
+            //libray[i].showBookInfo(); //인덱스 사용 불가능
+		}
+		System.out.println("=== 향상된 for문 ===");
+		for(Book book : library)
+			book.showBookInfo();
+	}
+
+}
+/*
+책1, 몰리
+책2, 보리
+=== 향상된 for문 ===
+책1, 몰리
+책2, 보리
+*/
+```
+
+
+
+## 7-4 배열 응용 프로그램
+
+- ArrayList를 사용하여 학생 성적 출력 프로그램 구현
+
+### Student 클래스 구현하기
+
+```java
+package arrayList;
+import java.util.ArrayList;
+
+public class Student {
+	int studentID;
+	String studentName;
+	ArrayList<Subject> subjectList;	//ArrayList 선언
+	
+	public Student(int studentID, String studentName){
+		this.studentID = studentID;
+		this.studentName = studentName;
+		subjectList = new ArrayList<Subject>();	//ArrayList 생성
+	}
+	
+	public void addSubject(String name, int score) {
+		Subject subject = new Subject();
+		subject.setName(name);
+		subject.setScorePoint(score);
+		subjectList.add(subject);
+	}
+	
+	public void showStudentInfo() {
+		int total = 0;
+		for(Subject s : subjectList) {
+			total += s.getScorePoint();
+			System.out.println(studentName+"의 "+s.getName()+"과목 성적: "+s.getScorePoint());
+		}
+		System.out.println("총점: "+total);
+	}
+}
+```
+
+### Subject 클래스 구현하기
+
+```java
+public class Subject {
+	private String name;
+	private int scorePoint;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getScorePoint() {
+		return scorePoint;
+	}
+	public void setScorePoint(int scorePoint) {
+		this.scorePoint = scorePoint;
+	}
+}
+```
+
+### 테스트 클래스 구현 후 결과 확인
+
+```java
+public class StudentTest {
+
+	public static void main(String[] args) {
+		Student studentLee = new Student(1001, "Lee");
+		studentLee.addSubject("국어", 100);
+		studentLee.addSubject("수학", 50);
+		
+		Student studentKim = new Student(1002, "Kim");
+		studentKim.addSubject("국어", 70);
+		studentKim.addSubject("수학", 80);
+		studentKim.addSubject("영어", 100);
+		
+		studentLee.showStudentInfo();
+		System.out.println("========================");
+		studentKim.showStudentInfo();
+	}
+}
+/*
+Lee의 국어과목 성적: 100
+Lee의 수학과목 성적: 50
+총점: 150
+========================
+Kim의 국어과목 성적: 70
+Kim의 수학과목 성적: 80
+Kim의 영어과목 성적: 100
+총점: 250
+*/
+```
+
