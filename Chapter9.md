@@ -305,6 +305,29 @@
 - Player 클래스
 
   ```java
+  package gamelevel;
+  
+  public class Player {
+  	private PlayerLevel level;		//PlayerLevel 자료형을 통해 다형성 구현 가능
+  	
+  	public Player() {
+  		level = new BeginnerLevel();
+  		level.showLevelMessage();
+  	}
+  	
+  	public PlayerLevel getLevel() {
+  		return level;
+  	}
+  	
+  	public void upgradeLevel(PlayerLevel level) {
+  		this.level = level;
+  		level.showLevelMessage();
+  	}
+  	
+  	public void play(int count) {
+  		level.go(count);
+  	}
+  }
   ```
 
   - 초기 레벨을 Beginner로 지정
@@ -312,6 +335,19 @@
 - PlayerLevel 클래스
 
   ```java
+  public abstract class PlayerLevel {
+  	public abstract void run();
+  	public abstract void jump();
+  	public abstract void turn();
+  	public abstract void showLevelMessage();
+  	
+  	final public void go(int count) {
+  		run();
+  		for(int i=0;i<count;i++) 
+  			jump();
+  		turn();
+  	}
+  }
   ```
 
   - 각 레벨마다 `run()`, `jump()`, `turn()`, `showLevelMessage()` 메서드는 다르게 구현되기 때문에 추상 메서드로 선언
@@ -384,3 +420,178 @@ Turn 할 줄 모름
 */
 ```
 
+### 추상 클래스와 다형성
+
+- 모든 레벨 클래스는 PlayerLevel 클래스를 상속 받았다
+  - Player 클래스에서 레벨을 별도의 자료형으로 선언하지 않고 `PlayerLevel`로 선언
+    - **레벨 클래스가 여러 개 존재해도 모든 클래스는 `PlayerLevel` 클래스로 대입 가능**
+    - **추상 클래스는 하위 클래스들을 하나의 자료형으로 선언 및 대입 가능**
+      - 가상 메서드에 의해 각 클래스에 구현된 기능 호출된다
+      - **즉** 하나의 코드가 다양한 자료형을 대상으로 동작하는 **다형성**을 활용했다
+
+
+
+## 9-4 final 예약어
+
+- 마지막으로 정한 것이니 더 이상 수정할 수 없다!
+
+| 사용 위치 | 설명                                            |
+| --------- | ----------------------------------------------- |
+| 변수      | final 변수는 상수를 의미                        |
+| 메서드    | final 메서드는 하위 클래스에서 재정의할 수 없다 |
+| 클래스    | final 클래스는 상속할 수 없다                   |
+
+### 상수를 의미하는 final 변수
+
+- `상수`: 변하지 않는 수
+
+```java
+public class Constant {
+	int num = 10;
+	final int NUM = 100;	//상수 선언
+	
+	public static void main(String[] args) {
+		Constant cons = new Constant();
+		cons.num = 50;
+		cons.NUM = 200;		//상수에 값을 대입해 오류
+		
+		System.out.println(cons.num);
+		System.out.println(cons.NUM);
+	}
+}
+```
+
+#### 여러 자바 파일에서 공유하는 상수 값 정의하기
+
+- 프로젝트 중 여러 파일에서 똑같이 공유해야 하는 상수 값 존재
+
+  - 파일에서 공유해야 하는 **상수 값을 한 파일에 모아 `public static final`로 선언하여 사용**
+
+  ```java
+  public class Define {
+  
+  	public static final int MIN = 1;
+  	public static final int MAX = 99999;
+  
+  	public static final int ENG = 1001;
+  	public static final int MATH = 2001;
+  	
+  	public static final double PI = 3.14;
+  	public static final String GOOD_MORNING = "Good Morning!";
+  }
+  ```
+
+  - `public`으로 선언하여 외부에서도 사용 가능
+  - `static`으로 선언하여 **인스턴스를 생성하지 않고** **클래스 이름으로 참조 가능**
+
+```java
+public class UsingDefine {
+
+	public static void main(String[] args) {
+
+		System.out.println(Define.GOOD_MORNING);   //static 으로 선언되었으므로 클래스 이름으로 참조 합니다.
+		System.out.println("최솟값은 " +  Define.MIN + "입니다.");
+		System.out.println("최댓값은 " +  Define.MAX + "입니다.");
+		System.out.println("수학 과목 코드 값은 " + Define.MATH + "입니다.");
+		System.out.println("영어 과목 코드 값은 " + Define.ENG + "입니다.");
+	}
+}
+```
+
+### 상속할 수 없는 final 클래스
+
+- 클래스를 `final`로 선언하면 상속할 수 없다
+
+  - 상속하면 변수나 메서드 재정의가 가능해진다 => 원래 클래스가 가지는 기능에 오류 발생 가능
+
+  - **보안과 관련되어 있거나, 기반 클래스가 변하면 안되는 경우에 사용**
+
+    ```java
+    public class MyString extends String{
+        //오류 발생
+    }
+    ```
+
+    
+
+## 연습문제
+
+1. 클래스를 구현할 때 메서드 몸체를 구현하지 않고 선언만 하는 메서드를 `추상 메서드`라 하고, 이를 포함한 클래스를 `추상 클래스`라고 한다
+
+2. 상수를 선언할 때 상속받은 클래스에서 메서드를 재정의하지 못하도록 사용하는 예약어는 `final`이다
+
+3. 추상 클래스나 추상 메서드를 선언할 때 사용하는 예약어는 `abstract`이다
+
+4. 로직 흐름을 정의한 메서드이며 메서드 내부에서 일반 메서드나 구현되지 않은 추상 메서드를 호출합니다. 흐름이 변하지 않도록 하위 클래스에서 재정의하지 못하게 final로 선언한 메서드를 `템플릿 메서드`라고 한다
+
+5. Car 예제 코드 구현하기
+
+   ```java
+   package question5;
+   
+   public abstract class Car {
+   	
+   	public abstract void start();
+   	public abstract void drive();
+   	public abstract void stop();
+   	
+   	public void run() {
+   		start();
+   		drive();
+   		stop();
+   		washCar();
+   	}
+   	public void washCar() {
+   		System.out.println("세차를 합니다");
+   	}
+   }
+   ```
+
+   ```java
+   public class Sonata extends Car {
+   
+   	@Override
+   	public void start() {
+   		System.out.println("Sonata 시동을 켭니다");
+   	}
+   
+   	@Override
+   	public void drive() {
+   		System.out.println("Sonata 달린다");
+   	}
+   
+   	@Override
+   	public void stop() {
+   		System.out.println("Sonata 멈춘다");
+   	}
+   
+   }
+   ```
+
+   ```java
+   public class CarTest {
+   
+   	public static void main(String[] args) {
+   		ArrayList<Car> carList = new ArrayList<Car>();
+   		carList.add(new Sonata());
+   		carList.add(new Avante());
+   		
+   		for(Car car : carList) {
+   			car.run();
+   			System.out.println("==========");
+   		}
+   	}
+   }
+   /*
+   Sonata 시동을 켭니다
+   Sonata 달린다
+   Sonata 멈춘다
+   세차를 합니다
+   ==========
+   Avante 시동을 켭니다
+   Avante 달린다
+   Avante 멈춘다
+   세차를 합니다
+   ==========
+   */
+   ```
