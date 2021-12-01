@@ -931,3 +931,763 @@ C
 
 
 ## 12-4 Set 인터페이스
+
+- 순서와 상관없이 중복을 허용하지 않는 경우에 `Set` 인터페이스를 구현한 클래스를 사용한다
+  - `Set 인터페이스`를 구현한 대표 클래스
+    - `HashSet`
+    - `TreeSet`
+
+### HashSet 클래스
+
+- `HashSet`클래스는 집합 자료 구조를 구현하며 중복을 허용하지 않는다
+
+- 코드
+
+  ```java
+  package collection.hashset;
+  import java.util.HashSet;
+  public class HashSetTest {
+  
+  	public static void main(String[] args) {
+  		HashSet<String> hashSet = new HashSet<String>();
+  		hashSet.add(new String("정몰리"));
+  		hashSet.add(new String("정보리"));
+  		hashSet.add(new String("정말리"));
+  		hashSet.add(new String("정몰리"));
+  		
+  		System.out.println(hashSet);
+  	}
+  }
+  /*
+  [정몰리, 정말리, 정보리]
+  ```
+
+  - 중복된 `정몰리` 문자열은 중복되어 출력되지 않는다
+  - **추가된 순서와 상관없이 출력된다**
+
+#### HashSet를 활용한 회원 관리 프로그램 구현하기
+
+- HashSet 클래스 생성 및 `addMember()`, `removeMember()`, `showAllMember()` 메서드 구현
+
+  ```java
+  package collection.hashset;
+  import java.util.HashSet;
+  import java.util.Iterator;
+  import collection.Member;
+  public class MemberHashSet {
+  	private HashSet<Member> hashSet;
+  	
+  	public MemberHashSet() {
+  		hashSet = new HashSet<Member>();
+  	}
+  	
+  	public void addMember(Member member) {
+  		hashSet.add(member);
+  	}
+  	
+  	public boolean removeMember(int memberId) {
+  		Iterator<Member> ir = hashSet.iterator();
+  		
+  		while(ir.hasNext()) {
+  			Member member = ir.next();
+  			int tempId = member.getMemberId();
+  			
+  			if(tempId == memberId) {
+  				hashSet.remove(member);
+  				return true;
+  			}
+  		}
+  		System.out.println(memberId+"가 존재하지 않습니다");
+  		return false;
+  	}
+  	
+  	public void showAllMember() {
+  		for(Member member : hashSet)
+  			System.out.println(member);
+  		System.out.println();
+  	}
+  }
+  ```
+
+  ```java
+  public class MemberHashSetTest {
+  
+  	public static void main(String[] args) {
+  
+  		MemberHashSet memberHashSet = new MemberHashSet();
+  		
+  		Member memberLee = new Member(1001, "이지원");
+  		Member memberSon = new Member(1002, "손민국");
+  		Member memberPark = new Member(1003, "박서훤");
+  		
+  		
+  		memberHashSet.addMember(memberLee);
+  		memberHashSet.addMember(memberSon);
+  		memberHashSet.addMember(memberPark);
+  		memberHashSet.showAllMember();
+  		
+  		Member memberHong = new Member(1003, "홍길동");  //1003 아이디 중복 
+  		memberHashSet.addMember(memberHong);
+  		memberHashSet.showAllMember();
+  	}
+  }
+  /*
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  홍길동회원님의 아이디는 1003입니다
+  박서훤회원님의 아이디는 1003입니다
+  ```
+
+  - 아이디가 동일한 회원 '홍길동'이 추가되었다
+    - 객체가 동일한 경우 중복처리 해야된다
+
+#### 객체가 동일함을 구현하기
+
+- 인스턴스 주소가 같으면 같은 객체이다
+
+  - BUT 예제 코드는 `회원 아이디`가 같으면 같은 회원이다
+    - 논리적으로 같은 객체를 구현하기 위해 `equals()`, `hashCode()` 메서드를 재정의한다
+
+- `Member`클래스 수정
+
+  ```java
+  public class Member {
+  	private int memberId;
+  	private String memberName;
+  	
+  	...
+  
+  	@Override
+  	public int hashCode() {
+  		return memberId;
+  	}
+  
+  	@Override
+  	public boolean equals(Object obj) {
+  		if(obj instanceof Member) {
+  			Member member = (Member)obj;
+  			if(this.memberId == member.memberId)
+  				return true;
+  			else
+  				return false;
+  		}
+  		return false;
+  	}
+  
+  	...
+  }
+  /*
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  ```
+
+  - 아이디가 같은 회원은 추가되지 않는다
+
+### TreeSet 클래스
+
+- `Tree`로 시작하는 클래스는 데이터를 추가한 후 결과를 출력하면 결과 값이 **정렬된다**
+
+- `TreeSet`은 자**료의 중복을 허용하지 않으며, 출력 결과 값을 정렬하는 클래스**
+
+- 예제 코드
+
+  ```java
+  package collection.treeset;
+  import java.util.TreeSet;
+  public class TreeSetTest {
+  
+  	public static void main(String[] args) {
+  		TreeSet<String> treeSet = new TreeSet<>();
+  		treeSet.add("홍길동");
+  		treeSet.add("강감찬");
+  		treeSet.add("이순신");
+  		
+  		for(String str : treeSet) {
+  			System.out.println(str);
+  		}
+  	}
+  }
+  /*
+  강감찬
+  이순신
+  홍길동
+  ```
+
+  - 결과가 정렬되어 출력되었다
+    - **자바는 정렬을 구현하기 위해 `이진트리(binary tree)`를 사용한다**
+
+#### 이진 검색 트리
+
+- 트리는 자료 사이의 계층 구조를 나타내는 자료 구조이다
+- `노드`: 트리 자료 구조에서 각 자료가 들어가는 공간
+  - `부모-자식 노드(parent-childe node)`: 위아래로 연결된 노드의 관계
+- 특징
+  - 이진 검색 트리는 노드에 저장되는 자료의 중복을 허용하지 않는다
+  - **왼쪽 자식 노드는 부모 노드보다 항상 작은 값을 가진다**
+  - **오른쪽 자식 노드는 부모보다 항상 큰 값을 가진다**
+    - 비교 범위가 평균 1/2만큼씩 줄어들어 효과적으로 자료검색 가능
+
+#### TreeSet을 활용해 회원 관리 프로그램 구현하기
+
+- 코드
+
+  ```java
+  package collection.treeset;
+  
+  import java.util.Iterator;
+  import java.util.TreeSet;
+  
+  import collection.Member;
+  
+  public class MemberTreeSet {
+  
+  	private TreeSet<Member> treeSet;
+  
+  	public MemberTreeSet(){
+  		treeSet = new TreeSet<Member>();
+  	}
+  	
+  	public void addMember(Member member){
+  		treeSet.add(member);
+  	}
+  	
+  	public boolean removeMember(int memberId){
+  		
+  		Iterator<Member> ir = treeSet.iterator();
+  		
+  		while(ir.hasNext()){
+  			Member member = ir.next();
+  			int tempId = member.getMemberId();
+  			if( tempId == memberId){
+  				treeSet.remove(member);
+  				return true;
+  			}
+  		}
+  		
+  		System.out.println(memberId + "가 존재하지 않는다");
+  		return false;
+  	}
+  	
+  	public void showAllMember(){
+  		for(Member member : treeSet){
+  			System.out.println(member);
+  		}
+  		System.out.println();
+  	}
+  }
+  ```
+
+  ```java
+  package collection.treeset;
+  
+  import collection.Member;
+  
+  public class MemberTreeSetTest {
+  
+  	public static void main(String[] args) {
+  
+  		MemberTreeSet memberTreeSet = new MemberTreeSet();
+  		
+  		Member memberPark = new Member(1003, "박서훤");
+  		Member memberLee = new Member(1001, "이지원");
+  		Member memberSon = new Member(1002, "손민국");
+  		
+  		
+  		memberTreeSet.addMember(memberLee);
+  		memberTreeSet.addMember(memberSon);
+  		memberTreeSet.addMember(memberPark);
+  		memberTreeSet.showAllMember();
+  		
+  		Member memberHong = new Member(1003, "홍길동");  //1003 아이디 중복 
+  		memberTreeSet.addMember(memberHong);
+  		memberTreeSet.showAllMember();
+  	}
+  }
+  /*
+  Exception in thread "main" java.lang.ClassCastException: class collection.Member cannot be cast to class java.lang.Comparable (collection.Member is in unnamed module of loader 'app'; java.lang.Comparable is in module java.base of loader 'bootstrap')
+  	at java.base/java.util.TreeMap.compare(TreeMap.java:1291)
+  	at java.base/java.util.TreeMap.put(TreeMap.java:536)
+  	at java.base/java.util.TreeSet.add(TreeSet.java:255)
+  	at collection.treeset.MemberTreeSet.addMember(MemberTreeSet.java:17)
+  	at collection.treeset.MemberTreeSetTest.main(MemberTreeSetTest.java:16)
+  ```
+
+  - Member 클래스가 Comparable 인터페이스를 구현하지 않았다고 오류
+    - **`Member`클래스를 추가할 때 `TreeSet`에서 어떤 기준으로 노드를 비교하여 트리를 형성해야 하는지 구현하지 않았다**
+
+### Comparable 인터페이스와 Comparator 인터페이스
+
+- `Member` 클래스가 가진 회원 아이디를 기준 오름차순으로 정렬하겠다
+
+  - `Comparable, Comparator` 인터페이스는 이러한 정렬을 구현할 수 있게 해주는 인터페이스이다
+
+  ```java
+  public class Member implements Comparable<Member>{
+  	...
+  }
+  ```
+
+#### 자기 자신과 전달받은 매개변수를 비교하는 Comparable 인터페이스
+
+- `Comparable` 인터페이스에서 `compareTo()` 추상 메서드가 있다
+
+  - `Member`클래스에서 `compareTo()`메서드를 구현해줘야 한다
+
+  ```java
+  public class Member implements Comparable<Member>{
+  	private int memberId;
+  	private String memberName;
+  	...
+  	@Override
+  	public int compareTo(Member member) {
+  		return (this.memberId - member.memberId);
+  	}
+  }
+  ```
+
+  - **새로 추가된 값이 `this`, 비교되는 값이 `매개변수`이다**
+  - `memberId`값을 비교하여 **새로 추가한 아이디가 크면 양수, 작으면 음수, 같으면 0**
+    - 이러면 오름차순으로 구현된다
+
+- **`compareTo()`메서드는 프로그래머가 호출하는게 아닌 객체가 TreeSet에 요소를 추가할 때 호출되는 메서드이다**
+  - 어떤 매개변수가 전달될지는 TreeSet의 요소에 따라 달라진다
+
+- 결과 출력
+
+  ```java
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  //오름차순으로 구현됨
+  ```
+
+- **내림차순으로 구현하려면**
+
+  ```java
+  public int compareTo(Member member) {
+  		return (this.memberId - member.memberId) * (-1);		//음수를 곱해준다
+  	}
+  /*
+  박서훤회원님의 아이디는 1003입니다
+  손민국회원님의 아이디는 1002입니다
+  이지원회원님의 아이디는 1001입니다
+  
+  박서훤회원님의 아이디는 1003입니다
+  손민국회원님의 아이디는 1002입니다
+  이지원회원님의 아이디는 1001입니다
+  ```
+
+#### 두 매개변수를 비교하는 Comparator 인터페이스
+
+- 정렬을 구현하는데 사용하는 인터페이스
+
+- `compare()` 메서드를 구현해야 된다
+
+  ```java
+  package collection;
+  
+  import java.util.Comparator;
+  
+  public class Member2 implements Comparator<Member2>{
+  
+  	private int memberId;        
+  	private String memberName;   
+  	...
+  	@Override
+  	public int compare(Member2 mem1, Member2 mem2) {
+  		
+  		return mem1.getMemberId() - mem2.getMemberId();	//전달받은 두 매개변수를 비교함
+  	}
+  }
+  ```
+
+  - `this`와 비교하는 `compareTo()`와 달리 두 매개변수를 비교한다
+    - 첫번째 매개변수가 클때 양수를 반환해 오름차순으로 정렬된다
+
+- 유의할점
+
+  - **TreeSet 생성자에** **Comparator를 구현한 객체를 매개변수로 전달해야 된다**
+
+    ```java
+    TreeSet<Member> treeSet = new TreeSet<Member>(new Member());
+    ```
+
+    - 다음과 같이 코드를 구현해야 된다
+
+
+
+- 일반적으로 `Comparator`보다 `Comparable`인터페이스를 많이 사용한다
+
+  - **이미 `Comparable`이 구현되어 있는경우 `Comparator`를 사용할 수 있다**
+
+    > String의 `Comparable`은 이미 오름차순으로 `final`로 선언되어 있다
+    >
+    > 이럴 경우 `Comparator`을 구현하여 내림차순을 만든다
+    >
+    > ```java
+    > class MyCompare implements Comparator<String>{
+    > 
+    > 	@Override
+    > 	public int compare(String s1, String s2) {
+    > 		return (s1.compareTo(s2)) * -1;		//내림차순으로 정렬
+    > 	}
+    > 	
+    > }
+    > 
+    > public class ComparatorTest {
+    > 
+    > 	public static void main(String[] args) {
+    > 		Set<String> set = new TreeSet<String>(new MyCompare());		//생성자 매개변수로 정렬 방식을 지정
+    > 		set.add("aaa");
+    > 		set.add("ccc");
+    > 		set.add("bbb");
+    > 		
+    > 		System.out.println(set);
+    > 	}
+    > }
+    > /*
+    > [ccc, bbb, aaa]
+    > ```
+    >
+    > - **TreeSet 클래스를 생성할 때 생성자에 매개변수를 넣지않으면 String 클래스에 정의된 `Comparable` 인터페이스의 `compareTo()`메서드 구현 내용대로 오름차순으로 정렬된다**
+    > - **TreeSet 클래스 생성자에 `Comparator` 인터페이스를 구현한 `MyCompare` 인스턴스를 매개변수로 넣어줘서 `compare()` 메서드대로 정렬되었다**
+
+
+
+## 12-5 Map 인터페이스
+
+- 자료를 쌍(pair)로 관리하는데 필요한 메서드가 정의되어 있다
+  - `key-value` 쌍으로 이루어진 객체의 `key`값은 유일하며 `value`값을 중복될 수 있다
+- Map 인터페이스를 구현한 클래스는 내부적으로 해시 알고리즘에 의해 구현되어 있다
+
+### HashMap 클래스
+
+- 해시 방식으로 자료를 관리한다
+
+  - `해시 테이블`: 해시 방식의 자료를 저장하는 공간
+
+  - `해시 함수`: key 값에 대응하는 해시 테이블 저장 위치를 계산하는 함수
+
+    ```java
+    index = hash(key)	//index는 저장 위치
+    ```
+
+- 새로운 `key-value` 입력 혹은 key를 통한 value 검색 속도는 매우 빠르다
+
+- 해쉬 함수가 동일한 index을 반환하면 `충동(collision)` 발생
+
+- `key`값을 중복될 수 없으므로 `equals()`, `hashcode()` 메서드를 재정의하여 사용하는게 좋다
+
+#### HashMap을 활용해 회원 관리 프로그램 구현하기
+
+- HashMap 활용 코드
+
+  ```java
+  package map.hashmap;
+  import java.util.HashMap;
+  import java.util.Iterator;
+  
+  import collection.Member;
+  public class MemberHashMap {
+  	private HashMap<Integer, Member> hashMap;
+  	
+  	public MemberHashMap() {
+  		hashMap = new HashMap<Integer, Member>();
+  	}
+  	
+  	public void addMember(Member member) {
+  		hashMap.put(member.getMemberId(), member);
+  	}
+  	
+  	public boolean removeMember(int memberId) {
+  		if(hashMap.containsKey(memberId)) {
+  			hashMap.remove(memberId);
+  			return true;
+  		}
+  		System.out.println(memberId+"가 존재하지 않음");
+  		return false;
+  	}
+  	
+  	public void showAllMember() {
+  		Iterator<Integer> ir = hashMap.keySet().iterator();
+  		while(ir.hasNext()) {
+  			int key = ir.next();
+  			Member member = hashMap.get(key);
+  			System.out.println(member);
+  		}
+  		System.out.println();
+  	}
+  }
+  ```
+
+  - key: 회원 아이디
+  - value: 회원 클래스
+  - showAllMember()은 key값을 iterator로 순회하여 key에 해당하는 member 출력했다
+  - **key 값으로 쓰인 회원 아이디는 Integer형이다**
+    - **Integer 클래스는 `equals(), hashcode()`메서드가 이미 재정의 되어있다**
+
+- 테스트 코드
+
+  ```java
+  public class MemberHashMapTest {
+  
+  	public static void main(String[] args) {
+  
+  		MemberHashMap memberHashMap = new MemberHashMap();
+  		
+  		
+  		Member memberLee = new Member(1001, "이지원");
+  		Member memberSon = new Member(1002, "손민국");
+  		Member memberPark = new Member(1003, "박서훤");
+  		Member memberHong = new Member(1004, "홍길동");
+  		
+  		memberHashMap.addMember(memberLee);
+  		memberHashMap.addMember(memberSon);
+  		memberHashMap.addMember(memberPark);
+  		memberHashMap.addMember(memberHong);
+  		
+  		memberHashMap.showAllMember();
+  		
+  		memberHashMap.removeMember(1004);
+  		memberHashMap.showAllMember();
+  	}
+  }
+  /*
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  홍길동회원님의 아이디는 1004입니다
+  
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  ```
+
+#### HashMap과 Hashtable
+
+- 둘다 쌍으로 이루어진 자료를 관리하는데 사용
+- `Hashtable` 클래스는 멀티스레드를 위한 동기화 제공
+  - 멀티스레드 환경 아니면 `Hashtable`보다 `HashMap` 사용 권장
+
+### TreeMap 클래스
+
+- `key`값으로 자료를 정렬하려면 `TreeMap`을 사용할 수 있다
+
+  - `key`값에 해당하는 클래스에 `Comparable`이나 `Comparator` 인터페이스를 구현해야 된다
+  - 위 예제는 `key : Integer`이어서 `Integer`클래스는 이미 `Comparable` 인터페이스가 구현되어있다
+
+  ```java
+  package map.treemap;
+  
+  import java.util.Iterator;
+  import java.util.TreeMap;
+  
+  import collection.Member;
+  
+  public class MemberTreeMap {
+  
+  	private TreeMap<Integer, Member> treeMap;
+  	
+  	public MemberTreeMap()
+  	{
+  		treeMap = new TreeMap<Integer, Member>();
+  	}
+  	
+  	public void addMember(Member member){
+  		
+  		treeMap.put(member.getMemberId(), member);
+  	}
+  	
+  	public boolean removeMember(int memberId){
+  		
+  		if(treeMap.containsKey(memberId)){
+  			treeMap.remove(memberId);
+  			return true;
+  		}
+  		
+  		System.out.println(memberId + "가 존재하지 않음");
+  		return false;
+  	}
+  	
+  	public void showAllMember(){
+  		Iterator<Integer> ir = treeMap.keySet().iterator();
+  		while (ir.hasNext()){
+  			int key = ir.next();
+  			Member member = treeMap.get(key);
+  			System.out.println(member);
+  		}	
+  		System.out.println();
+  	}
+  }
+  ```
+
+  ```java
+  public class MemberTreeMapTest {
+  
+  	public static void main(String[] args) {
+  
+  		MemberTreeMap memberHashMap = new MemberTreeMap();
+  		
+  		Member memberPark = new Member(1003, "박서훤");
+  		Member memberLee = new Member(1001, "이지원");
+  		Member memberHong = new Member(1004, "홍길동");
+  		Member memberSon = new Member(1002, "손민국");
+  		
+  		memberHashMap.addMember(memberPark);
+  		memberHashMap.addMember(memberLee);
+  		memberHashMap.addMember(memberHong);
+  		memberHashMap.addMember(memberSon);
+  		
+  		memberHashMap.showAllMember();
+  		
+  		memberHashMap.removeMember(1004);
+  		memberHashMap.showAllMember();
+  	}
+  }
+  /*
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  홍길동회원님의 아이디는 1004입니다
+  
+  이지원회원님의 아이디는 1001입니다
+  손민국회원님의 아이디는 1002입니다
+  박서훤회원님의 아이디는 1003입니다
+  ```
+
+  - key 값인 `회원 아이디` 기준으로 정렬되었다
+    - `key`가 `Integer` 클래스여서 `Comparator, Comparable` 인터페이스 구현이 이미 되어있다
+
+
+
+## 연습문제
+
+1. 자료 구조를 사용하기 편리하도록 자바에서 제공하는 라이브러리를 `컬렉션 프레임워크`라고 한다
+
+2. 클래스에서 여러 자료형을 사용할 때 자료형을 명시하지 않고 자료형을 의미하는 문자로 선언한 후 실제 클래스를 생성할 때 자료형을 명시하는 프로그래밍 방식을 `제네릭 프로그래밍`이라고 한다
+
+3. Collection 인터페이스를 구현한 클래스를 순회하기 위해 사용하는 인터페이스는 `Iterator`이다
+
+4. TreeSet을 사용할 때 Comparable 인터페이스를 구현하는 이유는 `TreeSet에 추가되는 객체의 정렬 방식을 구현하기 위함이다`
+
+5. StudentTest의 출력 결과가 다음처럼 나오도록 Student 클래스를 구현해 보세요
+
+   ```java
+   package question;
+   import java.util.HashSet;
+   
+   class Student{
+   	private int studentId;
+   	private String studentName;
+   	
+   	public Student(int studentId, String studentName) {
+   		super();
+   		this.studentId = studentId;
+   		this.studentName = studentName;
+   	}
+   
+   	@Override
+   	public int hashCode() {
+   		return studentId;
+   	}
+   
+   	@Override
+   	public boolean equals(Object obj) {
+   		if(obj instanceof Student) {
+   			Student student = (Student)obj;
+   			if(this.studentId == student.studentId)
+   				return true;
+   			else
+   				return false;
+   		}
+   		return false;
+   	}
+   
+   	@Override
+   	public String toString() {
+   		return this.studentId +":"+this.studentName;
+   	}
+   	
+   }
+   
+   public class StudentTest {
+   	public static void main(String[] args) {
+   		HashSet<Student> set = new HashSet<Student>();
+   		set.add(new Student(100, "홍길동"));
+   		set.add(new Student(200, "가나"));
+   		set.add(new Student(300, "다라"));
+   		set.add(new Student(400, "마바"));
+   		set.add(new Student(100, "사아"));
+   		
+   		System.out.println(set);
+   	}
+   
+   }
+   /*
+   [400:마바, 100:홍길동, 200:가나, 300:다라]
+   ```
+
+6. 
+   ```java
+   public class Car{
+   	String name;
+   	public Car() {	}
+   	public Car(String name) {
+   		this.name = name;
+   	}
+   }
+   ```
+
+   ```java
+   public class CarFactory {
+   	private static CarFactory instance = new CarFactory();
+   	HashMap<String, Car> carMap = new HashMap<>();
+   	
+   	private CarFactory() {}
+   	public static CarFactory getInstance() {
+   		if(instance == null)
+   			instance = new CarFactory();
+   		return instance;
+   	}
+   	
+   	public Car createCar(String name) {
+   		if(carMap.containsKey(name))
+   			return carMap.get(name);
+   		Car car = new Car(name);
+   		carMap.put(name, car);
+   		return car;
+   	}
+   }
+   ```
+
+   ```java
+   public class CarTest {
+   
+   	public static void main(String[] args) {
+   		CarFactory factory = CarFactory.getInstance();
+   		
+   		Car sonata1 = factory.createCar("연수차");
+   		Car sonata2 = factory.createCar("연수차");
+   		System.out.println(sonata1 == sonata2); // true
+   	
+   		Car avante1 = factory.createCar("승연차");
+   		Car avante2 = factory.createCar("승연차");
+   		System.out.println(avante1 == avante2); // true
+   		System.out.println(sonata1 == avante1); // false
+   	}
+   
+   }
+   ```
