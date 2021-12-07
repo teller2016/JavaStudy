@@ -1108,3 +1108,414 @@
 
 ## 15-6 직렬화
 
+### 직렬화와 역직렬화
+
+- 클래스의 인스턴스가 생성되면 변수 값은 계속 변하게 된다
+
+  - `직렬화(serialization)`: 인스턴스의 어느 순간 상태를 그대로 저장하거나 네트워크를 통해 전송할 일
+    - 인스턴스 내용을 연속 스트림으로 만드는 것, 인스턴스 변수 값을 스트림으로 만드는 것
+  - `역직렬화(deserialization)`: 저장된 내용이나 전송받은 내용을 다시 복원하는 것
+
+- `ObjectInputStream`, `ObjectOutputStream`을 통해 구현한다
+
+  | 생성자                               | 설명                                                         |
+  | ------------------------------------ | ------------------------------------------------------------ |
+  | ObjectInputStream(InputStream in)    | InputStream을 생성자의 매개변수로 받아 ObjectInputStream을 생성한다 |
+  | ObjectOutputStream(OutputStream out) | OutputStream을 생성자의 매개변수로 받아 ObjectOutputStream을 생성한다 |
+
+- 저장할 파일이나 전송할 네트워크 등의 기반 스트림을 매개변수로 받아서 인스턴스 변수 값을 저장하거나 전송한다
+
+- Person 클래스를 만들어 인스턴스로 생성한 후 파일에 썼다가 복원하는 예제
+
+  ```java
+  package stream.serialization;
+  
+  import java.io.FileInputStream;
+  import java.io.FileOutputStream;
+  import java.io.IOException;
+  import java.io.ObjectInputStream;
+  import java.io.ObjectOutputStream;
+  
+  class Person{
+  	private static final long serialVersionUID = -1503252402544036183L;		//버전 관리를 위한 정보
+  	String name;
+  	String job;
+  	
+  	public Person() {}
+  
+  	public Person(String name, String job) {
+  		this.name = name;
+  		this.job = job;
+  	}
+  
+  	@Override
+  	public String toString() {
+  		return name +", "+job;
+  	}
+  	
+  	
+  }
+  
+  public class SerializationTest {
+  
+  	public static void main(String[] args) {
+  		Person personAhn = new Person("안재용", "대표이사");
+  		Person personKim = new Person("김철수", "상무이사");
+  		
+  		try(FileOutputStream fos = new FileOutputStream("serial.out");
+  				ObjectOutputStream oos = new ObjectOutputStream(fos)
+  				){
+  			oos.writeObject(personAhn);	// person 인스턴스를 파일에 씀 (직렬화)
+  			oos.writeObject(personKim);
+  		} catch (IOException e) {
+  			e.printStackTrace();
+  		}
+  		
+  		try(FileInputStream fis = new FileInputStream("serial.out");
+  				ObjectInputStream ois = new ObjectInputStream(fis)
+  				){
+  			Person p1 = (Person)ois.readObject(); // person 인스턴스를 파일에 읽어들임 (역직렬화)
+  			Person p2 = (Person)ois.readObject();
+  			
+  			System.out.println(p1);
+  			System.out.println(p2);
+  		} catch (ClassNotFoundException e) {
+  			e.printStackTrace();
+  		} catch (IOException e) {
+  			e.printStackTrace();
+  		}
+  	}
+  }
+  ```
+
+  - 직렬화에 이용할 `Person` 클래스 생성
+  - `personAhn, personKim` 값이 `serial.out`파일에 쓰인다 (직렬화)
+  - `readObject()`메서드는 반환 값이 `Object`라 형 변환 해줘야됨
+  - **오류가 발생한다**
+
+#### Serializable 인터페이스
+
+- 직렬화는 인스턴스 내용이 외부로 유출되는 것이므로 프로그래머가 직렬화 하겠다는 의도를 표시해야 된다
+
+- `Person`클래스에 `마커 인터페이스(marker interface)`인 `Serializable`인터페이스를 추가해야된다
+
+  ```java
+  class Person implements Serializable{	//직렬화 하겠다는 의도 표시
+  	...
+  	String name;
+  	String job;
+  	...
+  	
+  }
+  /*
+  안재용, 대표이사
+  김철수, 상무이사
+  ```
+
+  - 그러면 다음과 같이 오류없이 출력된다
+
+#### transient 예약어
+
+- 직렬화 될 수 없는 클래스가 존재하거나 직렬화하고 싶지 않은 변수가 있을 수 있다
+
+  - `transient` 예약어: 변수의 직렬화되고 복원되는 과정에서 제외시킨다
+  - 사용한 변수 정보는 그 자료형의 기본 값으로 저장된다
+
+  ```java
+  String name;
+  transient String job;
+  /*
+  안재용, null
+  김철수, null
+  ```
+
+#### serialVersionUID를 사용한 버전 관리
+
+- 객체를 역직렬화할 때, 직렬화할 때의 클래스와 상태가 다르면 오류가 발생한다
+  - 사이에 클래스가 수정되거나 변경되면 역직렬화 불가능
+  - 그래서 **직렬화할 때 자동으로 `serialVersionUID`를 생성하여 정보를 저장한다**
+  - 역직렬화시 `serialVersionUID`를 비교한다
+    - 클래스 내용이 변경되면 버전이 맞지않아 오류 발생
+- 자바 설치 경로의 `bin\serialver.exe`를 사용하면 `serialVersionUID`가 생성된다
+  - 이 정보를 클래스 파일에 적으면 된다
+  - 이클립스에서는 자동으로 제공한다
+  - **직렬화의 대상이 되는 클래스 정보가 바뀌고 이를 공유해야 하는 경우에 버전 정보를 변경하면 된다**
+
+#### Externalizable 인터페이스
+
+- 직렬화 하는데 사용하는 또 다른 인터페이스 `Externalizable`
+
+- `Serializable`과는 달리 구현해야 할 메서드가 존재
+
+  - 객체의 직렬화와 역직렬화를 세밀하게 제어할때 메서드를 구현한다
+
+- name 속성을 가진 `Dog`클래스에 `Externalizable` 구현 예제
+
+  ```java
+  package stream.serialization;
+  ...
+  class Dog implements Externalizable{
+  	String name;
+  	
+  	public Dog() {}
+  
+  	@Override
+  	public void writeExternal(ObjectOutput out) throws IOException {	//Externalizable 인터페이스의 메서드 구현
+  		out.writeUTF(name);
+  	}
+  
+  	@Override
+  	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+  		name = in.readUTF();
+  	}
+  
+  	@Override
+  	public String toString() {
+  		return name;
+  	}
+  }
+  
+  public class ExternalizableTest {
+  
+  	public static void main(String[] args) throws IOException, ClassNotFoundException {
+  		Dog myDog = new Dog();
+  		myDog.name = "몰리";
+  		
+  		FileOutputStream fos = new FileOutputStream("external.out");
+  		ObjectOutputStream oos = new ObjectOutputStream(fos);
+  		
+  		try(fos; oos){
+  			oos.writeObject(myDog);
+  		} catch (IOException e) {
+  			e.printStackTrace();
+  		}
+  		
+  		FileInputStream fis = new FileInputStream("external.out");
+  		ObjectInputStream ois = new ObjectInputStream(fis);
+  		
+  		Dog dog = (Dog)ois.readObject();
+  		System.out.println(dog);
+  	}
+  
+  }
+  /*
+  몰리
+  ```
+
+  
+
+## 15-7 그 외 입출력 클래스
+
+### File 클래스
+
+- 파일이라는 개념을 추상화한 클래스
+
+- 별도의 입출력 기능은 없다
+
+  - 파일 자체의 경로나 정보를 알 수 있고 파일을 생성할 수 있다
+
+- 생성자
+
+  | 생성자                | 설명                                   |
+  | --------------------- | -------------------------------------- |
+  | File(String pathname) | pathname을 매개변수로 받아 파일을 생성 |
+
+- 예제
+
+  ```java
+  package stream.others;
+  
+  import java.io.File;
+  import java.io.IOException;
+  
+  public class FileTest {
+  	public static void main(String[] args) throws IOException {
+  		File file = new File("C:\\ONEDRIVE\\OneDrive - 아주대학교\\Java Study\\eclipse-workspace\\Chapter15\\newFile.txt");// 경로에 File 클래스 생성. 실제 파일 생성된거 아님
+  		file.createNewFile();	//실제 파일 생성
+  		
+  		System.out.println(file.isFile());
+  		System.out.println(file.isDirectory());
+  		System.out.println(file.getName());
+  		System.out.println(file.getAbsolutePath());
+  		System.out.println(file.getPath());
+  		System.out.println(file.canRead());
+  		System.out.println(file.canWrite());
+  		
+  		file.delete();	//파일 삭제
+  	}
+  }
+  /*
+  true
+  false
+  newFile.txt
+  C:\ONEDRIVE\OneDrive - 대학교\Java Study\eclipse-workspace\Chapter15\newFile.txt
+  C:\ONEDRIVE\OneDrive - 대학교\Java Study\eclipse-workspace\Chapter15\newFile.txt
+  true
+  true
+  ```
+
+  - `createNewFile()`로 실제 파일 생성
+  - **생성한 파일은 `FileInputStream`과 같은 파일 입출력 기능을 제공하는 클래스의 생성자 매개변수로 사용 가능**
+
+### RandomAccessFile 클래스
+
+- 입출력 클래스 중 유일하게 파일 입출력을 동시에 할 수 있는 클래스
+  - 임의의 위치로 이동하여 자료를 읽을 수 있다
+  - **파일의 어느 위치에서 읽고 쓰는지 위치를 가리키는 속성인 `파일 포인터`를 지닌다**
+- **스트림을 생성하지 않고 간단하게 파일에 자료를 쓰거나 읽을 때 사용하면 유용**
+
+- 생성자
+
+  | 생성자                                     | 설명                                                         |
+  | ------------------------------------------ | ------------------------------------------------------------ |
+  | RandomAccessFile(File file, String mode)   | 입출력을 할 File과 입출력 mode를 매개변수로 받습니다.<br />mode에는 읽기 전용 'r'과 읽고 쓰기 기능인 'rw'를 사용할 수 있다 |
+  | RandomAccessFile(String file, String mode) | 입출력을 할 파일 이름을 문자열로 받고 입출력 mode를 매개변수로 받습니다.<br />mode에는 읽기 전용 'r'과 읽고 쓰기 기능인 'rw'를 사용할 수 있다 |
+
+- 임의의 위치에 읽거나 쓰는 기능 외에도 다양한 자료형 값을 읽거나 쓸 수 있다
+
+  > **RandomAccessFile JavaDoc 살펴보기**
+  >
+  > - `DataInput`, `DataOutput` 인터페이스를 구현했다
+  >   - `DataInputStream` 및 `DataOutputStream`과 같이 다양한 자료형을 다루는 메서드 사용 가능
+
+- 여러 자료형 읽고 쓰는 예제
+
+  ```java
+  package stream.others;
+  
+  import java.io.IOException;
+  import java.io.RandomAccessFile;
+  
+  public class RandomAccessFileTest {
+  
+  	public static void main(String[] args) throws IOException {
+  		RandomAccessFile rf = new RandomAccessFile("random.txt", "rw");
+  		rf.writeInt(100);
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		rf.writeDouble(3.14);
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		rf.writeUTF("안녕하세요");
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		int i = rf.readInt();
+  		double d = rf.readDouble();
+  		String str = rf.readUTF();
+  		
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		System.out.println(i);
+  		System.out.println(d);
+  		System.out.println(str);
+  	}
+  }
+  /*
+  파일 포인터 위치: 4
+  파일 포인터 위치: 12
+  파일 포인터 위치: 29
+  Error.. 솰라솰라
+  ```
+
+  - `rw`모드를 사용해 읽고 쓰기 가능
+
+  - 포인터의 위치
+
+    ```java
+    rf.writeInt(100);		//int 4바이트
+    rf.writeDouble(3.14);	//double 8바이트
+    rf.writeUTF("안녕하세요");//17바이트
+    // 총 29바이트 => 파일 포인터 위치: 29
+    ```
+
+    - **파일 포인터 위치 29에서 `read()`메서드를 호출하면 오류 발생**
+    - **파일 포인터 위치 변경해주는 `seek()` 메서드를 활용하여 맨 처음으로 이동해줘야 된다**
+
+> **파일 포인터**
+>
+> - 파일에 자료를 읽거나 쓰면 파일 포인터가 이동한다
+> - `RandomAccessFile` 클래스를 생성하면 파일 포인터의 위치는 맨 앞, 0의 위치를 가리킨다
+>   - int 값을 쓰면 4바이트이므로 포인터가 4로 이동
+
+- 수정
+
+  ```java
+  public class RandomAccessFileTest {
+  
+  	public static void main(String[] args) throws IOException {
+  		RandomAccessFile rf = new RandomAccessFile("random.txt", "rw");
+  		rf.writeInt(100);
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		rf.writeDouble(3.14);
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		rf.writeUTF("안녕하세요");
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		rf.seek(0);													//파일 포인터 위치를 맨 처음으로 옮겼다
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		
+  		int i = rf.readInt();
+  		double d = rf.readDouble();
+  		String str = rf.readUTF();
+  				
+  		System.out.println("파일 포인터 위치: "+rf.getFilePointer());
+  		System.out.println(i);
+  		System.out.println(d);
+  		System.out.println(str);
+  	}
+  }
+  /*
+  파일 포인터 위치: 4
+  파일 포인터 위치: 12
+  파일 포인터 위치: 29
+  파일 포인터 위치: 0
+  파일 포인터 위치: 29
+  100
+  3.14
+  안녕하세요
+  ```
+
+
+
+## 연습문제
+
+1. 자바에서 입출력 기능을 스트림 클래스에서 제공하는 이유는 무엇인가?
+
+   > 입출력 기능을 추상화하여 클래스로 제공함으로써 장치(하드웨어)에 독립적으로 프로그래밍 가능하다
+
+2. 바이트로 읽어 들인 자료를 문자로 변환해주는 스트림은 `InputStreamReader`이다
+
+3. `FileOutputStream`과 `OutputStreamWriter`를 활용하여 a.txt파일에 "자바 공부 재밌어요" 출력해라
+
+   ```java
+   package stream.outputstream;
+   
+   import java.io.OutputStreamWriter;
+   import java.io.FileNotFoundException;
+   import java.io.FileOutputStream;
+   import java.io.IOException;
+   
+   public class Question3 {
+   
+   	public static void main(String[] args) throws FileNotFoundException {
+   		FileOutputStream fos = new FileOutputStream("a.txt", true);
+   		OutputStreamWriter sw = new OutputStreamWriter(fos);
+   		try(fos;sw){
+   			sw.write("자바 공부 재밌어요");
+   		} catch (IOException e) {
+   			// TODO Auto-generated catch block
+   			e.printStackTrace();
+   		}
+   	}
+   }
+   /*
+   [a.txt]
+   자바 공부 재밌어요
+   ```
+
+4. 다른 스트림을 감싸서 부가 기능을 제공하는 스트림은 `보조 스트림`이다
+
+5. 인스턴스 내용을 그대로 저장하거나 네트워크로 전송할 수 있도록 연속된 바이트로 만들고 이를 복원하는 기술을 `직렬화`입니다
+
+6. `4,5번`의 기술을 구현하기 위해 자바에서 사용하는 두 가지 인터페이스는 `Serializable`, `Externalizable`이다

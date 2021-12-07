@@ -30,7 +30,5 @@ public class DataStreamTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
-
 }
