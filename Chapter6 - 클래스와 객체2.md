@@ -33,7 +33,7 @@
   }
   ```
 
-  - 인스턴스 가리키는 변수가 **참조 변수**이며 추력하면 ```(클래스 이름)@(메모리 주소)``` 문자열 값이 나온다
+  - 인스턴스 가리키는 변수가 **참조 변수**이며 출력하면 ```(클래스 이름)@(메모리 주소)``` 문자열 값이 나온다
 
   - ```this```값이 참조 변수 ```bDay```를 출력한 값과 같다
 
@@ -580,18 +580,20 @@
   ```java
   package singleton;
   
-  public class CarFactory {
-  	private static CarFactory instance = new CarFactory();
-  	private CarFactory() {}
+  public class Car {
+  	private int carNum;
   	
-  	public static CarFactory getInstance() {
-  		if(instance == null)
-  			instance = new CarFactory();
-  		return instance;
+  	Car(int carNum){
+  		this.carNum = carNum;
   	}
+  	
+  	public int getCarNum() {
+  		return carNum;
+  	}
+  	
   }
   ```
-
+  
   ```java
   public class CarFactory {
   	private static CarFactory instance = new CarFactory();
@@ -612,7 +614,7 @@
   	}
   }
   ```
-
+  
   ```java
   public class CarFactoryTest {
   

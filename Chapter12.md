@@ -147,7 +147,7 @@
   Powder powder = powderPrinter.getMaterial(); // 명시적 형 변환을 하지 않음
   ```
 
-  - `T`로 정의한 클래스 부분에 `Powder`형으 넣어줬다
+  - `T`로 정의한 클래스 부분에 `Powder`형을 넣어줬다
   - `GenericPrinter<Powder>`에서 자료형을 명시해서 `getMaterial()` 메서드 반환할 때 형 변환이 필요없다
   - `대입된 자료형`: T 위치에 사용된 자료형
   - `제네릭 자료형`: 자료형을 대입해서 만든 `GenericPrinter<Powder>`
