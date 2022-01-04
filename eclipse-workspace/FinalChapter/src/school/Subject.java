@@ -10,10 +10,10 @@ public class Subject {
 	
 	private ArrayList<Student> studentList = new ArrayList<Student>();	//이 과목을 수강 신청한 학생 리스트, register()를 통해 학생 추가
 
-	public Subject(String subjectName, int subjectId, int gradeType) {
+	public Subject(String subjectName, int subjectId) {
 		this.subjectName = subjectName;
 		this.subjectId = subjectId;
-		this.gradeType = gradeType;
+		this.gradeType = Define.AB_TYPE;
 	}
 
 	public String getSubjectName() {
