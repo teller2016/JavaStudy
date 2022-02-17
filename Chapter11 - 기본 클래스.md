@@ -674,7 +674,7 @@ String str2 = "test";				//문자열 상수를 가리키는 방식
   - int 값을 객체고 활용할 수 있는 여러 메서드 제공
   - `private final int value;`라 한번 생성되면 변경할 수 없다
 
-#### integer 클래스의 메서드
+#### Integer 클래스의 메서드
 
 - `intValue()`: Integer 클래스 내부의 int 자료형 값을 가져온다
 

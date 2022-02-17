@@ -47,7 +47,7 @@
 > 									|
 > 								[`MyNoteBook`]
 >
-> - `Computer` 클래스는 추상 클래스이며, 이를 상속받은 DeskTop은 일반 클래스, NoteBook은 추상 클래스이다
+> - `Computer` 클래스는 추상 클래스이며, 이를 상속받은 `DeskTop`은 일반 클래스, `NoteBook`은 추상 클래스이다
 >   - `NoteBook`클래스를 상속받은 `MyNoteBook`은 일반 클래스
 >   - `display()`, `typing()`은 추상 메서드, `turnOn()`,` turnOff()`는 구현코드가 있는 메서드
 
